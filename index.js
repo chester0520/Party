@@ -25,8 +25,8 @@ bot.on('message', async event => {
       let reply = ''
       $('.row image-stacked a').each(function () {
         reply += $(this).text() + '\n'
-        console.log(this)
       })
+      console.log(this)
       event.reply(reply)
     } catch (error) {
       event.reply('發生錯誤')
