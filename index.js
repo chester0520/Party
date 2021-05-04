@@ -22,12 +22,98 @@ bot.on('message', async event => {
     try {
       const response = await axios.get(`https://www.indievox.com/activity/list/${encodeURI(event.message.text)}`)
       const $ = cheerio.load(response.data)
-      let reply = ''
-      $('.row image-stacked a').each(function () {
-        reply += $(this).text() + '\n'
+      $('.panel-body').each(function (r) {
+        const flex = {
+          type: 'bubble',
+          hero: {
+            type: 'image',
+            url: $(this).find('img').attr('src'),
+            size: 'full',
+            aspectRatio: '480:640',
+            aspectMode: 'fit',
+            action: {
+              type: 'uri',
+              uri: $(this).find('a').attr('href')
+            }
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: $('.multi_ellipsis').eq(r).text(),
+                weight: 'bold',
+                size: 'md',
+                wrap: true
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'lg',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'box',
+                    layout: 'baseline',
+                    spacing: 'sm',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '時間',
+                        color: '#aaaaaa',
+                        size: 'sm',
+                        flex: 1
+                      },
+                      {
+                        type: 'text',
+                        text: $('.date').eq(r).text(),
+                        wrap: true,
+                        color: '#666666',
+                        size: 'sm',
+                        flex: 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'link',
+                height: 'sm',
+                action: {
+                  type: 'uri',
+                  label: '前往購票網站',
+                  uri: $(this).find('a').attr('href')
+                }
+              },
+              {
+                type: 'spacer',
+                size: 'sm'
+              }
+            ],
+            flex: 0
+          }
+        }
+        console.log($(this).nextAll('.date'))
+        // const response1 = await axios.get(`$(this).find('a').attr('href')`)
+        const message = {
+          type: 'flex',
+          altText: $(this).text(),
+          contents: {
+            type: 'carousel',
+            contents: [flex]
+          }
+        }
+        event.reply(message)
       })
-      console.log(this)
-      event.reply(reply)
     } catch (error) {
       event.reply('發生錯誤')
     }
