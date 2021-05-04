@@ -1,6 +1,7 @@
 import linebot from 'linebot'
 import dotenv from 'dotenv'
 import axios from 'axios'
+import cheerio from 'cheerio'
 
 // 讓套件讀取 .env 檔案
 // 讀取後可以用 process.env.變數 使用
@@ -19,15 +20,13 @@ bot.listen('/', process.env.PORT, () => {
 bot.on('message', async event => {
   if (event.message.type === 'text') {
     try {
-      const response = await axios.get('https://datacenter.taichung.gov.tw/swagger/OpenData/f116d1db-56f7-4984-bad8-c82e383765c0')
-      const data = response.data.filter(data => {
-        return data['花種'] === event.message.text
-      })
-
+      const response = await axios.get(`https://www.indievox.com/activity/list/${encodeURI(event.message.text)}`)
+      const $ = cheerio.load(response.data)
       let reply = ''
-      for (const d of data) {
-        reply += `地點:${d['地點']} \n地址:${d['地址']} \n觀賞時期:${d['觀賞時期']}\n\n`
-      }
+      $('.row image-stacked a').each(function () {
+        reply += $(this).text() + '\n'
+        console.log(this)
+      })
       event.reply(reply)
     } catch (error) {
       event.reply('發生錯誤')
