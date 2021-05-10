@@ -2,6 +2,7 @@ import linebot from 'linebot'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import cheerio from 'cheerio'
+import fs from 'fs'
 
 // 讓套件讀取 .env 檔案
 // 讀取後可以用 process.env.變數 使用
@@ -22,7 +23,12 @@ bot.on('message', async event => {
     try {
       const response = await axios.get(`https://www.indievox.com/activity/list/${encodeURI(event.message.text)}`)
       const $ = cheerio.load(response.data)
+      const flexarr = []
+      let thistext = ''
       $('.panel-body').each(function (r) {
+        // for (i = 0; i <= r; i++) {
+        //   console.log(i)
+        // }
         const flex = {
           type: 'bubble',
           hero: {
@@ -42,7 +48,7 @@ bot.on('message', async event => {
             contents: [
               {
                 type: 'text',
-                text: $('.multi_ellipsis').eq(r).text(),
+                text: $(this).find('.multi_ellipsis').text(),
                 weight: 'bold',
                 size: 'md',
                 wrap: true
@@ -67,7 +73,7 @@ bot.on('message', async event => {
                       },
                       {
                         type: 'text',
-                        text: $('.date').eq(r).text(),
+                        text: $(this).find('.date').text(),
                         wrap: true,
                         color: '#666666',
                         size: 'sm',
@@ -102,18 +108,20 @@ bot.on('message', async event => {
             flex: 0
           }
         }
-        console.log($(this).nextAll('.date'))
+        flexarr.push(flex)
+        thistext += $(this).text()
         // const response1 = await axios.get(`$(this).find('a').attr('href')`)
-        const message = {
-          type: 'flex',
-          altText: $(this).text(),
-          contents: {
-            type: 'carousel',
-            contents: [flex]
-          }
-        }
-        event.reply(message)
       })
+      const message = {
+        type: 'flex',
+        altText: thistext,
+        contents: {
+          type: 'carousel',
+          contents: flexarr
+        }
+      }
+      fs.writeFileSync('aaa.json', JSON.stringify(message, null, 2))
+      event.reply(message)
     } catch (error) {
       event.reply('發生錯誤')
     }
