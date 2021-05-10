@@ -23,10 +23,10 @@ bot.on('message', async event => {
     try {
       const response = await axios.get(`https://www.indievox.com/activity/list/${encodeURI(event.message.text)}`)
       const response1 = await axios.get(`https://tixcraft.com/activity/list/search/${encodeURI(event.message.text)}`)
-      // const response2 = await axios.get(`https://kktix.com/events?utf8=%E2%9C%93&search=${encodeURI(event.message.text)}`)
+      const response2 = await axios.get(`https://kktix.com/events?utf8=%E2%9C%93&search=${encodeURI(event.message.text)}`)
       const $ = cheerio.load(response.data)
       const $$ = cheerio.load(response1.data)
-      // const $$$ = cheerio.load(response2.data)
+      const $$$ = cheerio.load(response2.data)
       const flexarr = []
       let thistext = ''
       $('.panel-body').each(function () {
@@ -195,9 +195,90 @@ bot.on('message', async event => {
         thistext += $$(this).find('a').text()
         flexarr.push(flex1)
       })
-      // $$$('figure').each(function () {
-      //   console.log($$$(this).html())
-      // })
+      $$$('.events li').each(function () {
+        const flex2 = {
+          type: 'bubble',
+          hero: {
+            type: 'image',
+            url: $$$(this).find('img').attr('src'),
+            size: 'full',
+            aspectRatio: '720:378',
+            aspectMode: 'fit',
+            action: {
+              type: 'uri',
+              uri: $$$(this).find('a').attr('href')
+            }
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: $$$(this).find('.event-title').text(),
+                weight: 'bold',
+                size: 'md',
+                wrap: true
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'lg',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'box',
+                    layout: 'baseline',
+                    spacing: 'sm',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '時間',
+                        color: '#aaaaaa',
+                        size: 'sm',
+                        flex: 1
+                      },
+                      {
+                        type: 'text',
+                        text: $$$(this).find('.date').text(),
+                        wrap: true,
+                        color: '#666666',
+                        size: 'sm',
+                        flex: 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'link',
+                height: 'sm',
+                action: {
+                  type: 'uri',
+                  label: '前往購票網站',
+                  uri: $$$(this).find('a').attr('href')
+                }
+              },
+              {
+                type: 'spacer',
+                size: 'sm'
+              }
+            ],
+            flex: 0
+          }
+        }
+        thistext += $$$(this).find('.event-title').text()
+        flexarr.push(flex2)
+        console.log($$$(this).html())
+      })
       const message = {
         type: 'flex',
         altText: thistext,
