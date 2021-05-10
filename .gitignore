@@ -1,3 +1,4 @@
 # 告訴 Git 忽略 node_modules 的所有變更
 .env
 node_modules
+aaa.json
