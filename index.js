@@ -132,7 +132,7 @@ bot.on('message', async event => {
             contents: [
               {
                 type: 'text',
-                text: $$(this).find('a').text(),
+                text: $$(this).find('.fcDark').text(),
                 weight: 'bold',
                 size: 'md',
                 wrap: true
@@ -196,7 +196,7 @@ bot.on('message', async event => {
         flexarr.push(flex1)
       })
       // $$$('figure').each(function () {
-      //   console.log(this)
+      //   console.log($$$(this).html())
       // })
       const message = {
         type: 'flex',
