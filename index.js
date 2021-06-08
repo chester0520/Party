@@ -277,7 +277,6 @@ bot.on('message', async event => {
         }
         thistext += $$$(this).find('.event-title').text()
         flexarr.push(flex2)
-        console.log($$$(this).html())
       })
       const message = {
         type: 'flex',
