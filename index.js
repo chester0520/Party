@@ -289,6 +289,7 @@ bot.on('message', async event => {
       fs.writeFileSync('aaa.json', JSON.stringify(message, null, 2))
       event.reply(message)
     } catch (error) {
+      console.log(error)
       event.reply('發生錯誤')
     }
   }
